@@ -7,11 +7,11 @@
   <meta name="description" content="อ่านตารางเวรจากรูป ตรวจทานวันที่ และสร้างไฟล์ ICS บนอุปกรณ์ของคุณ">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="เวรจุมพล">
+  <meta name="apple-mobile-web-app-title" content="เวรนอกเวลา">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icons/icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
-  <title>เวรของจุมพล → ICS</title>
+  <title>ส่งออกเวร → ICS</title>
   <script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
     :root{--navy:#0c4a6e;--blue:#0369a1;--sky:#e0f2fe;--teal:#0f766e;--ink:#0f172a;--muted:#64748b;--line:#cbd5e1;--paper:#f8fafc;--ok:#047857;--warn:#b45309;--bad:#be123c}
@@ -26,8 +26,8 @@
 <body>
   <header class="hero"><div class="wrap"><div class="hero-card">
     <div class="eyebrow">PERSONAL SHIFT TOOL</div>
-    <h1>เวรของจุมพล → ปฏิทิน ICS</h1>
-    <p>อัปโหลดรูปตารางเวร ให้ระบบช่วยค้นคำว่า “จุมพล” แล้วตรวจวันที่บนปฏิทินก่อนดาวน์โหลดไปใช้กับ Google Calendar, iPhone หรือ Outlook</p>
+    <h1>ส่งออกเวร → ปฏิทิน ICS</h1>
+    <p>อัปโหลดรูปตารางเวร ให้ระบบช่วยค้นคำว่า “ชื่อในตาราง” แล้วตรวจวันที่บนปฏิทินก่อนดาวน์โหลดไปใช้กับ Google Calendar, iPhone หรือ Outlook</p>
     <div class="privacy"><span>🔒</span><div><b>ประมวลผลในเครื่องของคุณ</b><br>รูปตารางและรายชื่อบุคลากรไม่ถูกบันทึกลงระบบ เว็บใช้ OCR ภายในเบราว์เซอร์และล้างข้อมูลเมื่อปิดหน้า</div></div>
     <div class="pwa-tools"><button class="btn" id="installApp" type="button" hidden>ติดตั้งแอปบนเครื่อง</button><span class="net-state" id="netState">ออนไลน์</span></div>
   </div></div></header>
@@ -36,7 +36,7 @@
     <aside class="panel">
       <h2>ตั้งค่าการค้นหา</h2><p class="sub">อัปโหลดได้หลายรูป เช่น เวรทั่วไป, OPD เคมี, เภสัชสนเทศ และคลินิกพิเศษ · การตั้งค่าจะจำอัตโนมัติในอุปกรณ์นี้</p>
       <div class="stack">
-        <div class="field"><label for="targetName">ชื่อที่ต้องการค้นหา</label><input id="targetName" value="จุมพล" autocomplete="off"></div>
+        <div class="field"><label for="targetName">ชื่อที่ต้องการค้นหา</label><input id="targetName" value="" autocomplete="off"></div>
         <div class="row">
           <div class="field"><label for="month">เดือน</label><select id="month"></select></div>
           <div class="field"><label for="yearBE">ปี พ.ศ.</label><input id="yearBE" type="number" min="2500" max="2700" value="2569"></div>
@@ -44,7 +44,7 @@
         <label class="upload" for="fileInput"><strong>📷 เลือกรูปตารางเวร</strong><span>JPG, PNG — เลือกหลายรูปพร้อมกันได้</span><input id="fileInput" type="file" accept="image/*" multiple></label>
         <button class="btn btn-outline" id="addManual">เพิ่มประเภทเวรเอง</button>
         <div class="progress" id="progress"><div id="progressBar"></div></div><div class="status" id="status" aria-live="polite"></div>
-        <button class="btn btn-primary" id="analyze">ค้นหา “จุมพล” จากรูป</button>
+        <button class="btn btn-primary" id="analyze">ค้นหา “ชื่อ” จากรูป</button>
       </div>
       <div class="divider"></div>
       <div class="notice">OCR ช่วยเลือกวันเบื้องต้นเท่านั้น กรุณาเทียบกับรูปและกดยืนยันวันบนปฏิทินก่อนสร้างไฟล์ ICS</div>
@@ -55,7 +55,7 @@
       <div class="toolbar"><div><h2 id="calendarTitle">ปฏิทินตรวจทาน</h2><p class="sub" style="margin:4px 0 0">คลิกวันที่เพื่อเพิ่มหรือลบเวรของประเภทที่กำลังเลือก</p></div><div class="active-pill" id="activePill">ยังไม่มีประเภทเวร</div></div>
       <div class="week"><div class="weekday">อาทิตย์</div><div class="weekday">จันทร์</div><div class="weekday">อังคาร</div><div class="weekday">พุธ</div><div class="weekday">พฤหัสบดี</div><div class="weekday">ศุกร์</div><div class="weekday">เสาร์</div></div>
       <div class="calendar" id="calendar"></div>
-      <div class="empty-state" id="emptyState">อัปโหลดรูป หรือเพิ่มประเภทเวรเอง แล้วเลือกวันที่ของจุมพล</div>
+      <div class="empty-state" id="emptyState">อัปโหลดรูป หรือเพิ่มประเภทเวรเอง แล้วเลือกวันที่ของตนเอง</div>
       <div class="summary"><h3>รายการที่จะสร้าง</h3><div class="chips" id="summaryChips"><span class="sub">ยังไม่มีวันที่เลือก</span></div></div>
       <div class="row" style="margin-top:18px">
         <div class="field"><label for="location">สถานที่ (ไม่บังคับ)</label><input id="location" placeholder="เช่น โรงพยาบาลมะเร็งอุบลราชธานี"></div>
